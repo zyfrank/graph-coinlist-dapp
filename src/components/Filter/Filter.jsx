@@ -18,11 +18,9 @@ const filterStyles = theme =>
 
 const Filter = ({
   classes,
-  onToggleWithName,
-  onToggleWithImage,
+  onToggleWithIssuer,
   onOrderBy,
-  withName,
-  withImage,
+  withIssuer,
   orderBy,
 }) => (
   <Grid item>
@@ -30,21 +28,13 @@ const Filter = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={withName}
-            onChange={event => onToggleWithName && onToggleWithName()}
+            checked={withIssuer}
+            onChange={event => onToggleWithIssuer && onToggleWithIssuer()}
           />
         }
-        label="With names"
+        label="With Issuer"
       />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={withImage}
-            onChange={event => onToggleWithImage && onToggleWithImage()}
-          />
-        }
-        label="With images"
-      />
+
       <FormControlLabel
         control={
           <Select
@@ -53,9 +43,10 @@ const Filter = ({
             onChange={event => onOrderBy && onOrderBy(event.target.value)}
           >
             <MenuItem value="id">ID</MenuItem>
-            <MenuItem value="imageUrl">Image</MenuItem>
-            <MenuItem value="displayName">Name</MenuItem>
-            <MenuItem value="owner">Owner</MenuItem>
+            <MenuItem value="fulfillmentAmount">fulfillmentAmount</MenuItem>
+            <MenuItem value="issuer">issuer</MenuItem>
+
+
           </Select>
         }
         label="Order By:"

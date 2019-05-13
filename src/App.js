@@ -14,7 +14,10 @@ import {
 import './App.css'
 import Header from './components/Header'
 import Error from './components/Error'
-import Gravatars from './components/Gravatars'
+import Bounties from './components/Bounties'
+import Issuers  from './components/Issuers'
+import Contributers  from './components/Contributers'
+import Fulfillers  from './components/Fulfillers'
 import Filter from './components/Filter'
 
 if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
@@ -26,24 +29,48 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-const GRAVATARS_QUERY = gql`
-  query gravatars($where: Gravatar_filter!, $orderBy: Gravatar_orderBy!) {
-    gravatars(first: 100, where: $where, orderBy: $orderBy, orderDirection: asc) {
+const BOUNTIES_QUERY = gql`
+  query bounties($where: Bounty_filter!, $orderBy: Bounty_orderBy!) {
+    bounties(where: $where, orderBy: $orderBy, orderDirection: asc) {
       id
-      owner
-      displayName
-      imageUrl
+      issuer
+      fulfillmentAmount
+      data
     }
   }
+`
+const ISSUERS_QUERY = gql`
+query {
+  issuers(first:20, orderBy :number, orderDirection:desc){
+    id
+    bounties
+  }
+}
+`
+const CONTRIBUTERS_QUERY = gql`
+query {
+  contributers(first:10, orderBy :number, orderDirection:desc){
+    id
+    bounties
+  }
+}
+`
+
+const FULFILLERS_QUERY = gql`
+query {
+  fulfillers(first:20, orderBy :number, orderDirection:desc){
+    id
+    fulfillments{id}
+  }
+}
 `
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      withImage: false,
-      withName: false,
-      orderBy: 'displayName',
+      withIssuer: false,
+      orderBy: 'id',
       showHelpDialog: false,
     }
   }
@@ -57,33 +84,88 @@ class App extends Component {
   }
 
   render() {
-    const { withImage, withName, orderBy, showHelpDialog } = this.state
+    const { withIssuer, orderBy, showHelpDialog } = this.state
 
     return (
       <ApolloProvider client={client}>
         <div className="App">
+        <Grid container direction="column">
+            
+            <Grid item>
+              <Grid container>
+                <Query
+                  query={CONTRIBUTERS_QUERY}
+                >
+                  {({ data, error, loading }) => {
+                    return loading ? (
+                      <LinearProgress variant="query" style={{ width: '100%' }} />
+                    ) : error ? (
+                      <Error error={error} />
+                    ) : (
+                      <Contributers contributers={data.contributers} />
+                    )
+                  }}
+                </Query>
+              </Grid>
+            </Grid>
+          </Grid>
+          
+          <Grid container direction="column">
+            
+            <Grid item>
+              <Grid container>
+                <Query
+                  query={ISSUERS_QUERY}
+                >
+                  {({ data, error, loading }) => {
+                    return loading ? (
+                      <LinearProgress variant="query" style={{ width: '100%' }} />
+                    ) : error ? (
+                      <Error error={error} />
+                    ) : (
+                      <Issuers issuers={data.issuers} />
+                    )
+                  }}
+                </Query>
+              </Grid>
+            </Grid>
+          </Grid>
+        
+          <Grid item>
+              <Grid container>
+                <Query
+                  query={FULFILLERS_QUERY}
+                >
+                  {({ data, error, loading }) => {
+                    return loading ? (
+                      <LinearProgress variant="query" style={{ width: '100%' }} />
+                    ) : error ? (
+                      <Error error={error} />
+                    ) : (
+                      <Fulfillers fulfillers={data.fulfillers} />
+                    )
+                  }}
+                </Query>
+              </Grid>
+            </Grid>
+          
           <Grid container direction="column">
             <Header onHelp={this.toggleHelpDialog} />
             <Filter
               orderBy={orderBy}
-              withImage={withImage}
-              withName={withName}
+              withIssuer={withIssuer}
               onOrderBy={field => this.setState(state => ({ ...state, orderBy: field }))}
-              onToggleWithImage={() =>
-                this.setState(state => ({ ...state, withImage: !state.withImage }))
-              }
-              onToggleWithName={() =>
-                this.setState(state => ({ ...state, withName: !state.withName }))
-              }
+              onToggleWithIssuer={() =>
+                this.setState(state => ({ ...state, withIssuer: !state.withIssuer }))
+            }
             />
             <Grid item>
               <Grid container>
                 <Query
-                  query={GRAVATARS_QUERY}
+                  query={BOUNTIES_QUERY}
                   variables={{
                     where: {
-                      ...(withImage ? { imageUrl_starts_with: 'http' } : {}),
-                      ...(withName ? { displayName_not: '' } : {}),
+                      ...(withIssuer ? { issuer_not: '' } : {}),
                     },
                     orderBy: orderBy,
                   }}
@@ -94,7 +176,7 @@ class App extends Component {
                     ) : error ? (
                       <Error error={error} />
                     ) : (
-                      <Gravatars gravatars={data.gravatars} />
+                      <Bounties bounties={data.bounties} />
                     )
                   }}
                 </Query>

@@ -3,84 +3,84 @@ import {
   Card,
   CardContent,
   CardActionArea,
-  CardMedia,
   Grid,
   Typography,
   createStyles,
   withStyles,
+  Link,
 } from '@material-ui/core'
-
-const gravatarStyles = theme =>
+//import Link from '@material-ui/core/Link';
+const fulfillerStyles = theme =>
   createStyles({
     actionArea: {
-      maxWidth: 300,
+      maxWidth: 400,
     },
-    image: {
-      height: 150,
-    },
-    displayName: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-    },
+
     id: {
       textOverflow: 'ellipsis',
       overflow: 'hidden',
     },
-    owner: {
+    number: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+	  },
+    bounties:{
       textOverflow: 'ellipsis',
       overflow: 'hidden',
     },
   })
 
-const Gravatar = ({ classes, id, displayName, imageUrl, owner }) => (
+const Fulfiller = ({ classes, id, number, fulfillments}) => (
   <Grid item>
     <Card>
       <CardActionArea className={classes.actionArea}>
-        {imageUrl && (
-          <CardMedia className={classes.image} image={imageUrl} title={displayName} />
-        )}
+
         <CardContent>
-          <Typography variant="h6" component="h3" className={classes.displayName}>
-            {displayName || '—'}
-          </Typography>
-          <Typography color="textSecondary">ID</Typography>
+          <Typography color="textSecondary">Address</Typography>
           <Typography component="p" className={classes.id}>
             {id}
           </Typography>
-          <Typography color="textSecondary">Owner</Typography>
-          <Typography component="p" className={classes.owner}>
-            {owner}
+
+          <Typography color="textSecondary">Total Bounties Fulfilled</Typography>
+          <Typography component="p" className={classes.number}>
+            {fulfillments.length}
           </Typography>
+
+          <Typography color="textSecondary">Fulfilled  ID</Typography>
+          <Typography component="p" className={classes.fulfillments}>
+            {fulfillments.map(item=>item.id).toString()}
+          </Typography>
+
         </CardContent>
       </CardActionArea>
     </Card>
   </Grid>
 )
 
-const StyledGravatar = withStyles(gravatarStyles)(Gravatar)
+const StyledFulfiller = withStyles(fulfillerStyles)(Fulfiller)
 
-const gravatarsStyles = theme =>
+const fulfillersStyles = theme =>
   createStyles({
     title: {
       marginTop: theme.spacing.unit * 2,
     },
   })
 
-const Gravatars = ({ classes, gravatars }) => (
+const Fulfillers = ({ classes, fulfillers }) => (
   <Grid container direction="column" spacing={16}>
     <Grid item>
       <Typography variant="title" className={classes.title}>
-        {gravatars.length} Gravatars
+        Top20 Fulfillers
       </Typography>
     </Grid>
     <Grid item>
       <Grid container direction="row" spacing={16}>
-        {gravatars.map(gravatar => (
-          <StyledGravatar key={gravatar.id} {...gravatar} />
+        {fulfillers.map(fulfiller => (
+          <StyledFulfiller key={fulfiller.id} {...fulfiller} />
         ))}
       </Grid>
     </Grid>
   </Grid>
 )
 
-export default withStyles(gravatarsStyles)(Gravatars)
+export default withStyles(fulfillersStyles)(Fulfillers)
