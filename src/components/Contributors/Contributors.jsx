@@ -10,7 +10,7 @@ import {
   Link,
 } from '@material-ui/core'
 //import Link from '@material-ui/core/Link';
-const contributerStyles = theme =>
+const contributorStyles = theme =>
   createStyles({
     actionArea: {
       maxWidth: 400,
@@ -30,7 +30,7 @@ const contributerStyles = theme =>
     },
   })
 
-const Contributer = ({ classes, id, number, bounties}) => (
+const Contributor = ({ classes, id, number, bounties}) => (
   <Grid item>
     <Card>
       <CardActionArea className={classes.actionArea}>
@@ -57,30 +57,30 @@ const Contributer = ({ classes, id, number, bounties}) => (
   </Grid>
 )
 
-const StyledContributer = withStyles(contributerStyles)(Contributer)
+const StyledContributor = withStyles(contributorStyles)(Contributor)
 
-const contributersStyles = theme =>
+const contributorsStyles = theme =>
   createStyles({
     title: {
       marginTop: theme.spacing.unit * 2,
     },
   })
 
-const Contributers = ({ classes, contributers }) => (
+const Contributors = ({ classes, contributors }) => (
   <Grid container direction="column" spacing={16}>
     <Grid item>
       <Typography variant="title" className={classes.title}>
-        Top10 Contributers
+        Top20 Contributors(Who can be an Issuer or not)
       </Typography>
     </Grid>
     <Grid item>
       <Grid container direction="row" spacing={16}>
-        {contributers.map(contributer => (
-          <StyledContributer key={contributer.id} {...contributer} />
+        {contributors.map(contributor => (
+          <StyledContributor key={contributor.id} {...contributor} />
         ))}
       </Grid>
     </Grid>
   </Grid>
 )
 
-export default withStyles(contributersStyles)(Contributers)
+export default withStyles(contributorsStyles)(Contributors)

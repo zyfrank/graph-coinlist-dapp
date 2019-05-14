@@ -15,9 +15,9 @@ import './App.css'
 import Header from './components/Header'
 import Error from './components/Error'
 import Bounties from './components/Bounties'
-import Issuers  from './components/Issuers'
-import Contributers  from './components/Contributers'
-import Fulfillers  from './components/Fulfillers'
+import Issuers from './components/Issuers'
+import Contributors from './components/Contributors'
+import Fulfillers from './components/Fulfillers'
 import Filter from './components/Filter'
 
 if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
@@ -41,15 +41,15 @@ const BOUNTIES_QUERY = gql`
 `
 const ISSUERS_QUERY = gql`
 query {
-  issuers(first:20, orderBy :number, orderDirection:desc){
+  issuers(first:10, orderBy :number, orderDirection:desc){
     id
     bounties
   }
 }
 `
-const CONTRIBUTERS_QUERY = gql`
+const CONTRIBUTORS_QUERY = gql`
 query {
-  contributers(first:10, orderBy :number, orderDirection:desc){
+  contributors(first:20, orderBy :number, orderDirection:desc){
     id
     bounties
   }
@@ -89,12 +89,12 @@ class App extends Component {
     return (
       <ApolloProvider client={client}>
         <div className="App">
-        <Grid container direction="column">
-            
+          <Grid container direction="column">
+
             <Grid item>
               <Grid container>
                 <Query
-                  query={CONTRIBUTERS_QUERY}
+                  query={CONTRIBUTORS_QUERY}
                 >
                   {({ data, error, loading }) => {
                     return loading ? (
@@ -102,16 +102,16 @@ class App extends Component {
                     ) : error ? (
                       <Error error={error} />
                     ) : (
-                      <Contributers contributers={data.contributers} />
-                    )
+                          <Contributors contributors={data.contributors} />
+                        )
                   }}
                 </Query>
               </Grid>
             </Grid>
           </Grid>
-          
+
           <Grid container direction="column">
-            
+
             <Grid item>
               <Grid container>
                 <Query
@@ -123,32 +123,32 @@ class App extends Component {
                     ) : error ? (
                       <Error error={error} />
                     ) : (
-                      <Issuers issuers={data.issuers} />
-                    )
+                          <Issuers issuers={data.issuers} />
+                        )
                   }}
                 </Query>
               </Grid>
             </Grid>
           </Grid>
-        
+
           <Grid item>
-              <Grid container>
-                <Query
-                  query={FULFILLERS_QUERY}
-                >
-                  {({ data, error, loading }) => {
-                    return loading ? (
-                      <LinearProgress variant="query" style={{ width: '100%' }} />
-                    ) : error ? (
-                      <Error error={error} />
-                    ) : (
-                      <Fulfillers fulfillers={data.fulfillers} />
-                    )
-                  }}
-                </Query>
-              </Grid>
+            <Grid container>
+              <Query
+                query={FULFILLERS_QUERY}
+              >
+                {({ data, error, loading }) => {
+                  return loading ? (
+                    <LinearProgress variant="query" style={{ width: '100%' }} />
+                  ) : error ? (
+                    <Error error={error} />
+                  ) : (
+                        <Fulfillers fulfillers={data.fulfillers} />
+                      )
+                }}
+              </Query>
             </Grid>
-          
+          </Grid>
+
           <Grid container direction="column">
             <Header onHelp={this.toggleHelpDialog} />
             <Filter
@@ -157,7 +157,7 @@ class App extends Component {
               onOrderBy={field => this.setState(state => ({ ...state, orderBy: field }))}
               onToggleWithIssuer={() =>
                 this.setState(state => ({ ...state, withIssuer: !state.withIssuer }))
-            }
+              }
             />
             <Grid item>
               <Grid container>
@@ -176,8 +176,8 @@ class App extends Component {
                     ) : error ? (
                       <Error error={error} />
                     ) : (
-                      <Bounties bounties={data.bounties} />
-                    )
+                          <Bounties bounties={data.bounties} />
+                        )
                   }}
                 </Query>
               </Grid>
