@@ -7,9 +7,8 @@ import {
   Typography,
   createStyles,
   withStyles,
-  Link,
 } from '@material-ui/core'
-//import Link from '@material-ui/core/Link';
+
 const contributorStyles = theme =>
   createStyles({
     actionArea: {
@@ -70,13 +69,13 @@ const Contributors = ({ classes, contributors }) => (
   <Grid container direction="column" spacing={16}>
     <Grid item>
       <Typography variant="title" className={classes.title}>
-        Top20 Contributors(Who can be an Issuer or not)
+        Top {contributors.length} Contributors (Who fund a bounty, can be an Issuer or not)
       </Typography>
     </Grid>
     <Grid item>
       <Grid container direction="row" spacing={16}>
         {contributors.map(contributor => (
-          <StyledContributor key={contributor.id} {...contributor} />
+          <StyledContributor key={parseInt(contributor.id)} {...contributor} />
         ))}
       </Grid>
     </Grid>

@@ -7,9 +7,8 @@ import {
   Typography,
   createStyles,
   withStyles,
-  Link,
 } from '@material-ui/core'
-//import Link from '@material-ui/core/Link';
+
 const issuerStyles = theme =>
   createStyles({
     actionArea: {
@@ -70,7 +69,7 @@ const Issuers = ({ classes, issuers }) => (
   <Grid container direction="column" spacing={16}>
     <Grid item>
       <Typography variant="title" className={classes.title}>
-        Top20 Issuers
+        Top {issuers.length} Issuers
       </Typography>
     </Grid>
     <Grid item>

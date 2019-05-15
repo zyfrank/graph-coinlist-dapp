@@ -10,11 +10,14 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  TextField,
+  InputLabel,
 } from '@material-ui/core'
 import './App.css'
 import Header from './components/Header'
 import Error from './components/Error'
 import Bounties from './components/Bounties'
+import Bounty from './components/Bounty'
 import Issuers from './components/Issuers'
 import Contributors from './components/Contributors'
 import Fulfillers from './components/Fulfillers'
@@ -29,13 +32,28 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-const BOUNTIES_QUERY = gql`
-  query bounties($where: Bounty_filter!, $orderBy: Bounty_orderBy!) {
-    bounties(where: $where, orderBy: $orderBy, orderDirection: asc) {
+const BOUNTY_QUERY = gql`
+  query bounty($id:String!){
+    bounty(id: $id) {
       id
-      issuer
       fulfillmentAmount
       data
+      issuer {id}
+      deadline
+      fulfillments {fulfiller {id}}
+    }
+  }
+  `
+
+const BOUNTIES_QUERY = gql`
+  query bounties($orderBy: Bounty_orderBy!){
+    bounties(first:50, orderBy: $orderBy, orderDirection: desc) {
+      id
+      fulfillmentAmount
+      data
+      issuer {id}
+      deadline
+      fulfillments {fulfiller {id}}
     }
   }
 `
@@ -49,7 +67,7 @@ query {
 `
 const CONTRIBUTORS_QUERY = gql`
 query {
-  contributors(first:20, orderBy :number, orderDirection:desc){
+  contributors(first:10, orderBy :number, orderDirection:desc){
     id
     bounties
   }
@@ -58,7 +76,7 @@ query {
 
 const FULFILLERS_QUERY = gql`
 query {
-  fulfillers(first:20, orderBy :number, orderDirection:desc){
+  fulfillers(first:10, orderBy :number, orderDirection:desc){
     id
     fulfillments{id}
   }
@@ -69,10 +87,13 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      withIssuer: false,
       orderBy: 'id',
       showHelpDialog: false,
+      bountyID: "0",
+      inputBountyNumber : "0"
+
     }
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   toggleHelpDialog = () => {
@@ -83,14 +104,26 @@ class App extends Component {
     window.location.href = 'https://thegraph.com/docs/quick-start'
   }
 
+  handleInputChange(event) {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  }
+
+  onSearch = () => {
+    this.setState(state => ({ ...state, bountyID: state.inputBountyNumber }))
+  }
+  onBountyChange = (event) => {
+                this.setState(state => ({ ...state, tmpbountyID: event.target.value }))
+  }
   render() {
-    const { withIssuer, orderBy, showHelpDialog } = this.state
+    const { withIssuer, orderBy, showHelpDialog, bountyID, inputBountyNumber } = this.state
 
     return (
       <ApolloProvider client={client}>
         <div className="App">
+          <Header onHelp={this.toggleHelpDialog} />
           <Grid container direction="column">
-
             <Grid item>
               <Grid container>
                 <Query
@@ -111,7 +144,6 @@ class App extends Component {
           </Grid>
 
           <Grid container direction="column">
-
             <Grid item>
               <Grid container>
                 <Query
@@ -131,6 +163,7 @@ class App extends Component {
             </Grid>
           </Grid>
 
+          <Grid container direction="column">
           <Grid item>
             <Grid container>
               <Query
@@ -148,16 +181,53 @@ class App extends Component {
               </Query>
             </Grid>
           </Grid>
+         </Grid>
 
+         <Grid container direction="column">
+
+         <Grid container direction="row">
+            
+         <InputLabel htmlFor="component-simple">Bounty:</InputLabel>
+            <TextField 
+              placeholder="Input Bounty Number"
+              margin="normal"
+              onChange={this.handleInputChange}
+              value={inputBountyNumber}
+              name = "inputBountyNumber"
+            />
+            
+            
+            <Button onClick={this.onSearch} 
+            color="primary">
+                Search Bounty
+              </Button>
+              </Grid>
+
+                <Query
+                  query={BOUNTY_QUERY}
+                  variables={{
+                    id: bountyID,
+                  }}
+                >
+                  {({ data, error, loading }) => {
+                    return loading ? (
+                      <LinearProgress variant="query" style={{ width: '100%' }} />
+                    ) : error ? (
+                      <Error error={error} />
+                    ) : (
+                   
+                      <Bounty {...data.bounty}/>
+                    
+                        )
+                  }}
+                </Query>
+            </Grid>
           <Grid container direction="column">
-            <Header onHelp={this.toggleHelpDialog} />
             <Filter
               orderBy={orderBy}
-              withIssuer={withIssuer}
+
               onOrderBy={field => this.setState(state => ({ ...state, orderBy: field }))}
-              onToggleWithIssuer={() =>
-                this.setState(state => ({ ...state, withIssuer: !state.withIssuer }))
-              }
+
             />
             <Grid item>
               <Grid container>
